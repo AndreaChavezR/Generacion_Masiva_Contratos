@@ -5,46 +5,79 @@ import sys
 from datetime import datetime
 
 class DataManager:
-    def __init__(self):
-        if getattr(sys, 'fozen', False):
-            base_dir = sys._MEIPASS
+    def __init__(self, contract_type='adquisiciones'):
+        self.contract_type = contract_type
+        
+        if getattr(sys, 'frozen', False): 
+            self.base_dir = os.path.dirname(sys.executable)
         else:
-            base_dir = os.getcwd()
+            self.base_dir = os.getcwd()
             
-        self.excel_file = os.path.join(base_dir,"contratos.xlsx")
-        self.initialize_database()  
+        self.excel_file = os.path.join(self.base_dir, f"contratos_{self.contract_type}.xlsx")
+        self.initialize_database()
+
+    def switch_contract_type(self, new_type):
+        """Cambia el tipo de contrato y actualiza la ruta del Excel"""
+        self.contract_type = new_type
+        self.excel_file = os.path.join(self.base_dir, f"contratos_{self.contract_type}.xlsx")
+        self.initialize_database()
 
     def initialize_database(self):
         """Crea el archivo Excel con estructura inicial si no existe"""
         if not os.path.exists(self.excel_file):
-            columns = [
-                'ID', 'FECHA_REGISTRO', 'GENERADO',
-                'CONTRATO_ADQUISICION', 'NO_CONTRATO',
-                'BIENES', 'TITULAR_AREA_REQUIRENTE', 
-                'TITULAR_AREA', 'PROVEEDOR', 'NOM_PROVEEDOR',
-                'CARGO_PROVEEDOR', 'CARGO_AREA_REQUIRENTE',
-                'NO_COMPRA','FECHA_CELEBRACIÓN','FUNDAMENTO'
-                'FECHA_NOMBRAMIENTO', 'TIPO_ADQUISICION',
-                'ADQUISICION', 'NECESIDADES', 'NO_DENOMINACION',
-                'NO_OFICIO', 'NO_ESCRITURA_PUBLICA', 
-                'FECHA_PUBLICACION', 'TITULAR_NOTARIA', 
-                'NO_NOTARIA','DIA', 'NO_MERCANTIL', 'ENTIDAD_FEDERATIVA',
-                'OBJETO_SOCIAL', 'PERSONA_FISICA', 
-                'CARACTER_PERSONA_FISICA', 'TIPO_DOCUMENTO', 
-                'NO_DOCUMENTO', 'INSTITUCION', 'FOLIO_REGISTRO',
-                'NO_ESCRITURA', 'FECHA_PUBLICACION2', 
-                'INE_NOTARIO', 'RFC', 'NO_CONSTANCIA',
-                'FECHA_EXPEDICION', 'ANEXOS', 'CONSTANCIAS', 
-                'DOMICILIO', 'NUMERO', 'COLONIA', 'ALCALDIA', 
-                'CP', 'TELEFONOS', 'CORREO', 'CALLE', 'NO_EXT',
-                'DESCRIPCION_ADQUISICION', 'NO_REQUERIMIENTO', 
-                'PARTIDA_PRESUPUESTAL', 'MONTO_AUTORIZADO', 
-                'CORREO_1', 'CORREO_2', 'FECHA_ENTREGA', 
-                'FECHA_VIGENCIA_ENTREGA', 'VIGENCIA_CONTRATO', 
-                'NO_PAG', 'DIAS', 'MES', 'DIA_FIRMA', 'MES_FIRMA',
-                'DIRECCION_DE'
-            ]
-            pd.DataFrame(columns=columns).to_excel(self.excel_file, index=False)
+            # Columnas base comunes
+            columns = ['ID', 'FECHA_REGISTRO', 'GENERADO', 'NO_CONTRATO', 'PROVEEDOR', 'RFC']
+            if self.contract_type == 'adquisiciones':
+                specific_columns = [
+                    'ID', 'FECHA_REGISTRO', 'GENERADO',
+                    'NO_CONTRATO',
+                    'BIENES', 'TITULAR_AREA_REQUIRENTE', 
+                    'TITULAR_AREA', 'PROVEEDOR', 'NOM_PROVEEDOR',
+                    'CARGO_PROVEEDOR', 'CARGO_AREA_REQUIRENTE',
+                    'NO_REQUISICION','FECHA_CELEBRACIÓN','FUNDAMENTO'
+                    'FECHA_NOMBRAMIENTO', 'TIPO_ADQUISICION',
+                    'ADQUISICION', 'NECESIDADES', 'PARTIDA_DENOMINACION',
+                    'NO_OFICIO', 'NO_ESCRITURA_PUBLICA', 
+                    'FECHA_PUBLICACION', 'TITULAR_NOTARIA', 
+                    'NO_NOTARIA','DIA', 'NO_MERCANTIL', 'ENTIDAD_FEDERATIVA',
+                    'OBJETO_SOCIAL', 'PERSONA_FISICA', 
+                    'CARACTER_PERSONA_FISICA', 'IDENTIFICACION', 
+                    'NO_DOCUMENTO', 'INSTITUCION', 'FOLIO_REGISTRO_PROVEEDOR',
+                    'NO_ESCRITURA', 'FECHA_PUBLICACION2', 
+                    'INE_NOTARIO', 'RFC', 'NO_CONSTANCIA',
+                    'FECHA_EXPEDICION', 'ANEXOS', 'CONSTANCIAS', 
+                    'DOMICILIO', 'NUMERO', 'COLONIA', 'ALCALDIA', 
+                    'CP', 'TELEFONOS', 'CORREO', 'CALLE', 'NO_EXT',
+                    'DESCRIPCION_ADQUISICION', 'NO_REQUERIMIENTO', 
+                    'PARTIDA_PRESUPUESTAL', 'MONTO_AUTORIZADO', 
+                    'CORREO_1', 'CORREO_2', 'FECHA_ENTREGA', 
+                    'FECHA_VIGENCIA_ENTREGA', 'VIGENCIA_CONTRATO', 
+                    'NO_PAG', 'DIAS', 'MES', 'DIA_FIRMA', 'MES_FIRMA',
+                    'DIRECCION_DE'
+                ]
+            else: #servicios
+                specific_columns = [
+                'SERVICIOS', 'TITULAR_AREA_REQUIRENTE', 'TITULAR_AREA',
+                'NOM_PROVEEDOR','CARGO_PROVEEDOR', 'CARGO_AREA_REQUIRENTE',
+                'FECHA_NOMBRAMIENTO', 'TIPO_ADQUISICION', 'DESCRIPCION_ADQUISICION', 
+                'NO_REQUERIMIENTO', 'NECESIDADES', 'PARTIDA_DENOMINACION', 
+                'NO_OFICIO', 'FECHA_NOMBRAMIENTO', 
+                'NO_ESCRITURA_PUBLICA', 'FECHA_ESCRITURA_PUBLICA', 'TITULAR_NOTARIA', 
+                'NO_NOTARIA', 'NO_MERCANTIL', 'ENTIDAD_FEDERATIVA', 
+                'INE_NOTARIA', 'DIA', 'OBJETO_SOCIAL', 'PERSONA_FISICA',
+                'CARGO_PERSONA_FISICA','CARGO_REPRESENTANTE', 'IDENTIFICACION', 'NO_DOCUMENTO', 
+                'INSTITUTO', 'SEÑALAR_RELACION_CON', 'NACIONALIDAD', 
+                'NO_INE', 'EXTRANJERO','IDENTIFICACION2', 
+                'DENOMINACION', 'OBJ_SOCIAL', 'FOLIO', 'NO_CONSTANCIA', 
+                'FECHA_CONSTANCIA', 'ANEXOS', 'CONSTANCIAS', 
+                'DOMICILIO', 'ALCALDIA', 'CP', 'TELEFONOS', 
+                'CORREO', 'CALLE', 'NO_EXT', 'DOMICILIO_CONTRATANTE', 
+                'SERVICIO_PROVEEDOR', 'NO_SERV','PARTIDA_PRESUPUESTAL',
+                'MONTO_AUTORIZADO', 'CORREO_1', 'CORREO_2', 'NOM_COORDINADOR',
+                'FECHA_ENTREGA', 'FECHA_TERMINO', 'FECHA_FIRMA', 
+                'NO_PAG', 'FECHA_CELEBRACION','DIRECCION_DE'
+                ]
+                pd.DataFrame(columns=columns + specific_columns).to_excel(self.excel_file, index=False, engine='openpyxl')
     
     def load_data(self):
         """Carga todos los registros del Excel"""
