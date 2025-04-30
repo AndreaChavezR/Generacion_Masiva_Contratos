@@ -16,6 +16,7 @@ Programa para generar contratos personalizados en Word a partir de plantillas y 
   Pandas, tkinter, datetime, docx, os, sys, threading.
 
 ## Estructura de proyecto
+```plaintext
 gestion-contratos/
 ├── main_app.py            # Interfaz principal
 ├── data_manager.py        # Gestión de datos
@@ -23,6 +24,8 @@ gestion-contratos/
 ├── contratos_generados/   # Documentos finales
 ├── bases_datos/           # Archivos Excel
 └── requirements.txt       # Dependencias
+```
+
 
 ## Uso 🖱️
 1. Ejecutar aplicación:
